@@ -1,6 +1,6 @@
 FROM python:alpine3.4
 
-ADD requirements.txt /
+ADD requirements.txt
 
 RUN apk add --update \
     python \
