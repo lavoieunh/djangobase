@@ -1,0 +1,48 @@
+version: "3.1"
+
+services:
+
+ db:
+  restart: always
+  image: postgres:9.3-alpine
+  environment:
+    POSTGRES_USER: demouser
+    POSTGRES_PASSWORD: demodemo123
+    POSTGRES_DB: djangodb
+  networks:
+    - djangodb 
+  #ports: 
+  #  - "5432"
+  volumes:
+    - pg_data:/var/lib/postgresql
+ web:
+  depends_on:
+     - db
+  build: . 
+  command: python3 manage.py runserver 0.0.0.0:8000
+  environment:
+    DEBUG: "true"
+  ports:
+    - "8000"
+  environment:
+   - DATABASE_HOST=postgresql
+
+  networks:
+    - djangofront
+    - djangodb
+
+ redis:
+  restart: always
+  image: redis
+  networks:
+     - djangofront
+
+volumes:
+    pg_data:
+    
+networks:
+  djangofront:
+    external: true
+
+  djangodb:
+    external: false
