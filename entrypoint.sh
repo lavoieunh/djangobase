@@ -1,4 +1,4 @@
-#!/bin/ash 
+#!/bin/ash +x
 
 python3 manage.py migrate 
 
