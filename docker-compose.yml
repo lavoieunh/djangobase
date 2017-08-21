@@ -4,45 +4,57 @@ services:
 
  db:
   restart: always
+  #replicas: 1
   image: postgres:9.3-alpine
   environment:
-    POSTGRES_USER: demouser
-    POSTGRES_PASSWORD: demodemo123
-    POSTGRES_DB: djangodb
-  networks:
-    - djangodb 
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_DB: postgres
+
+  
+  #networks:
+   # - djangodb 
   #ports: 
   #  - "5432"
   volumes:
     - pg_data:/var/lib/postgresql
  web:
+  restart: always
   depends_on:
      - db
-  build: . 
-  command: python3 manage.py runserver 0.0.0.0:8000
+  image: kenlavoie/djangobase
+  #replicas: 1
+  #entrypoint: docker-entrypoint.sh
+  command: bash -c "./docker-entrypoint.sh python3 manage.py runserver 0.0.0.0:8000"
   environment:
-    DEBUG: "true"
+    DB_NAME: db 
+    DB_USER: postgres
+    DB_PASSWORD: postgres
+    DB_SERVICE: postgres
+    DB_PORT: 5432 
+    DB_HOST: db:5432
   ports:
     - "8000"
-  environment:
-   - DATABASE_HOST=postgresql
+  
+  links: 
+    - db
 
-  networks:
-    - djangofront
-    - djangodb
+  #networks:
+  #  - djangofront
+  #  - djangodb
 
- redis:
-  restart: always
-  image: redis
-  networks:
-     - djangofront
+ #redis:
+  #restart: always
+  #image: redis
+  #links:
+  #   - web
 
 volumes:
     pg_data:
     
-networks:
-  djangofront:
-    external: true
+#networks:
+ # djangofront:
+  #  external: true
 
-  djangodb:
-    external: false
+  #djangodb:
+   # external: false
